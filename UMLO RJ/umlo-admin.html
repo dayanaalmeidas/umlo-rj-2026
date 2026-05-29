@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UMLO RJ 2026 — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--azul:#00BDF2;--azul-esc:#008ED4;--navy:#002561;--rosa:#EE2D67;--amarelo:#EBEA70;--bg:#F0F4FA;--card:#FFFFFF;--text:#1A1A2E;--muted:#5A6A8A;--border:#D8E2F0;}
+body{font-family:'Lato',Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+header{background:var(--navy);color:white;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.header-left h1{font-family:'Montserrat',sans-serif;font-size:1.3rem;font-weight:800;}
+.header-left p{font-size:0.8rem;opacity:0.65;margin-top:0.2rem;}
+.header-right{display:flex;gap:0.6rem;flex-wrap:wrap;}
+.btn{padding:0.55rem 1.1rem;border-radius:8px;border:none;font-family:'Montserrat',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:opacity 0.15s,transform 0.1s;}
+.btn:active{transform:scale(0.97);}
+.btn-azul{background:var(--azul-esc);color:white;}
+.btn-azul:hover{opacity:0.85;}
+.btn-rosa{background:var(--rosa);color:white;}
+.btn-rosa:hover{opacity:0.85;}
+.container{max-width:960px;margin:0 auto;padding:1.75rem 1.5rem 4rem;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;margin-bottom:1.75rem;}
+.stat-card{background:var(--card);border-radius:10px;padding:0.9rem 1.1rem;border:1px solid var(--border);}
+.stat-label{font-family:'Montserrat',sans-serif;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.3rem;}
+.stat-value{font-family:'Montserrat',sans-serif;font-size:1.5rem;font-weight:800;color:var(--navy);}
+.stat-sub{font-size:0.72rem;color:var(--muted);margin-top:0.15rem;}
+.tabs{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:2px solid var(--border);}
+.tab{font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:700;padding:0.65rem 1.4rem;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:color 0.15s,border-color 0.15s;}
+.tab:hover{color:var(--navy);}
+.tab.active{color:var(--azul-esc);border-bottom-color:var(--azul-esc);}
+.toolbar{display:flex;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center;}
+.toolbar select,.toolbar input{padding:0.5rem 0.85rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Lato',sans-serif;font-size:0.87rem;background:white;color:var(--text);}
+.toolbar input{flex:1;min-width:180px;}
+.toolbar input:focus,.toolbar select:focus{outline:2px solid var(--azul);}
+.count-badge{font-family:'Montserrat',sans-serif;font-size:0.78rem;font-weight:700;background:#E6F1FB;color:var(--navy);padding:0.3rem 0.85rem;border-radius:20px;margin-left:auto;white-space:nowrap;}
+.atualizado{font-size:0.75rem;color:var(--muted);margin-bottom:1rem;text-align:right;}
+.bloco-section{margin-bottom:2rem;}
+.bloco-titulo{font-family:'Montserrat',sans-serif;font-size:0.73rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--azul-esc);margin-bottom:0.85rem;padding-bottom:0.45rem;border-bottom:2px solid var(--azul);}
+.oficina-box{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:0.75rem;overflow:hidden;}
+.oficina-header{padding:0.75rem 1.1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;border-bottom:1px solid var(--border);background:#FAFCFF;}
+.oficina-nome{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.88rem;color:var(--navy);}
+.oficina-meta{display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;}
+.tag{font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;padding:0.18rem 0.55rem;border-radius:20px;background:#E6F1FB;color:var(--navy);text-transform:uppercase;}
+.vagas-badge{font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:700;padding:0.18rem 0.65rem;border-radius:20px;}
+.vb-ok{background:#E1F5EE;color:#0F6E56;}
+.vb-warn{background:#FAEEDA;color:#BA7517;}
+.vb-full{background:#FCEBEB;color:#A32D2D;}
+.alunos-lista{padding:0.3rem 0;}
+.aluno-row{display:flex;align-items:center;gap:0.85rem;padding:0.42rem 1.1rem;border-bottom:1px dashed var(--border);}
+.aluno-row:last-child{border-bottom:none;}
+.check-box{width:17px;height:17px;border:1.5px solid var(--border);border-radius:3px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.check-box.checked{background:var(--azul-esc);border-color:var(--azul-esc);}
+.check-box.checked::after{content:'checkmark';color:white;font-size:10px;}
+.aluno-nome-p{font-size:0.85rem;flex:1;}
+.aluno-num{font-family:'Montserrat',sans-serif;font-size:0.7rem;color:var(--muted);font-weight:700;}
+.empty{padding:0.65rem 1.1rem;font-size:0.82rem;color:var(--muted);font-style:italic;}
+.aluno-card{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:0.7rem;overflow:hidden;}
+.aluno-card-header{padding:0.75rem 1.1rem;background:#FAFCFF;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;}
+.aluno-card-nome{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.9rem;color:var(--navy);}
+.blocos-count{font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:20px;}
+.bc-completo{background:#E1F5EE;color:#0F6E56;}
+.bc-parcial{background:#FAEEDA;color:#BA7517;}
+.aluno-oficinas{padding:0.5rem 0;}
+.oficina-row{display:flex;align-items:center;gap:0.75rem;padding:0.38rem 1.1rem;border-bottom:1px dashed var(--border);font-size:0.83rem;}
+.oficina-row:last-child{border-bottom:none;}
+.bloco-pill-mini{font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;padding:0.18rem 0.55rem;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.bp-b1{background:#E6F1FB;color:#185FA5;}
+.bp-b2{background:#EAF3DE;color:#3B6D11;}
+.bp-b3{background:#FAEEDA;color:#854F0B;}
+.oficina-row-nome{flex:1;}
+.btn-cancelar{background:none;border:1px solid var(--rosa);color:var(--rosa);border-radius:6px;padding:0.18rem 0.55rem;font-family:'Montserrat',sans-serif;font-size:0.68rem;font-weight:700;cursor:pointer;flex-shrink:0;}
+.btn-cancelar:hover{background:var(--rosa);color:white;}
+.loading-state{text-align:center;padding:3rem;color:var(--muted);}
+.spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--azul-esc);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 1rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+#toast-admin{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(120px);background:var(--navy);color:white;padding:0.75rem 1.5rem;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:700;transition:transform 0.3s;z-index:999;border-left:4px solid var(--azul);white-space:nowrap;}
+#toast-admin.show{transform:translateX(-50%) translateY(0);}
+#toast-admin.error{border-left-color:var(--rosa);background:#4A1528;}
+@media print{
+  header .header-right,.toolbar,.tabs,.atualizado,.stats-grid,.btn-cancelar{display:none!important;}
+  .tab-panel{display:block!important;}
+  body{background:white;}
+  .oficina-box,.aluno-card{break-inside:avoid;}
+  header{padding:0.75rem 1.5rem;}
+  .container{padding:1rem;}
+  .bloco-section{break-inside:avoid;}
+}
+@media(max-width:520px){header{padding:1rem 1.25rem;}.container{padding:1.25rem 1rem 3rem;}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-left">
+    <h1>&#9881; UMLO RJ 2026 &mdash; Admin</h1>
+    <p>pH Tijuca &middot; 21 de julho &middot; Painel de inscrições</p>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-azul" onclick="carregarDados()">&#8635; Atualizar</button>
+    <button class="btn btn-rosa" onclick="exportarExcel()">&#128194; Excel</button>
+    <button class="btn btn-rosa" onclick="window.print()">&#128438; PDF</button>
+  </div>
+</header>
+
+<div class="container">
+  <div id="stats-grid" class="stats-grid"></div>
+  <div class="tabs">
+    <div class="tab active" onclick="mudarAba('presenca')">&#128203; Lista de Presença</div>
+    <div class="tab" onclick="mudarAba('alunos')">&#128100; Por Aluno</div>
+    <div class="tab" onclick="mudarAba('portaria')">&#128682; Portaria</div>
+  </div>
+  <div class="atualizado" id="atualizado"></div>
+  <div class="tab-panel active" id="panel-presenca">
+    <div class="toolbar">
+      <select id="filtro-bloco" onchange="renderPresenca()">
+        <option value="">Todos os blocos</option>
+        <option value="Bloco 1">Bloco 1 — 13h às 14h</option>
+        <option value="Bloco 2">Bloco 2 — 14h30 às 15h30</option>
+        <option value="Bloco 3">Bloco 3 — 16h às 17h</option>
+      </select>
+      <span class="count-badge" id="badge-presenca">0 inscrições</span>
+    </div>
+    <div id="lista-presenca"></div>
+  </div>
+  <div class="tab-panel" id="panel-portaria">
+    <div class="toolbar">
+      <input type="text" id="busca-portaria" placeholder="Buscar aluno..." oninput="renderPortaria()">
+      <span class="count-badge" id="badge-portaria">0 alunos</span>
+    </div>
+    <div id="lista-portaria"></div>
+  </div>
+  <div class="tab-panel" id="panel-alunos">
+    <div class="toolbar">
+      <input type="text" id="busca-aluno" placeholder="Buscar aluno..." oninput="renderAlunos()">
+      <span class="count-badge" id="badge-alunos">0 alunos</span>
+    </div>
+    <div id="lista-alunos"></div>
+  </div>
+</div>
+
+<div id="toast-admin"></div>
+
+<script>
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKqSPkXbSeqU65VTW9fEOicRRlrMVUf-lIrMrvGnHy5nn-kshQ9ARMk0UbVhAv7r8fpw/exec';
+
+var BLOCOS_INFO = [
+  {label:'Bloco 1',horario:'13h às 14h',cor:'bp-b1',oficinas:[
+    {nome:'ISMART BJJ',categoria:'Esportes',vagas:20},
+    {nome:'Oficina de Confeitaria',categoria:'Culinaria',vagas:20},
+    {nome:'Wow-Slime',categoria:'Artes manuais',vagas:15},
+    {nome:'Introdução ao Python',categoria:'Tecnologia',vagas:10},
+    {nome:'TransformArte',categoria:'Artes manuais',vagas:10},
+    {nome:'O Resgate da Coroa Real',categoria:'Jogos',vagas:10}
+  ]},
+  {label:'Bloco 2',horario:'14h30 às 15h30',cor:'bp-b2',oficinas:[
+    {nome:'Sua arte, sua rua',categoria:'Artes manuais',vagas:20},
+    {nome:'Mundo Nerd',categoria:'Comunicacao e expressao',vagas:20},
+    {nome:'Improvisando Cenas 2',categoria:'Teatro',vagas:15},
+    {nome:'Doce Saber — Oficina de Mousses',categoria:'Culinaria',vagas:15},
+    {nome:'NBA da Coruja Azul',categoria:'Esportes',vagas:18}
+  ]},
+  {label:'Bloco 3',horario:'16h às 17h',cor:'bp-b3',oficinas:[
+    {nome:'Cubo Fácil',categoria:'Raciocínio lógico',vagas:6},
+    {nome:'Eletricidade Líquida',categoria:'Ciência',vagas:10},
+    {nome:'Torneio de Xadrez',categoria:'Esportes',vagas:8},
+    {nome:'Desenhistas Anônimos',categoria:'Artes manuais',vagas:15},
+    {nome:'Escolhas & Consequências',categoria:'Jogos',vagas:12},
+    {nome:'Deu Nó',categoria:'Artes manuais',vagas:15}
+  ]}
+];
+
+var dadosBrutos = [];
+var presencaMarcada = {};
+var abaAtiva = 'presenca';
+
+function mudarAba(aba) {
+  abaAtiva = aba;
+  var tabs = document.querySelectorAll('.tab');
+  tabs[0].classList.toggle('active', aba === 'presenca');
+  tabs[1].classList.toggle('active', aba === 'alunos');
+  tabs[2].classList.toggle('active', aba === 'portaria');
+  document.getElementById('panel-presenca').classList.toggle('active', aba === 'presenca');
+  document.getElementById('panel-alunos').classList.toggle('active', aba === 'alunos');
+  document.getElementById('panel-portaria').classList.toggle('active', aba === 'portaria');
+  if (aba === 'portaria') renderPortaria();
+}
+
+function carregarDados() {
+  var loading = '<div class="loading-state"><div class="spinner"></div><p>Carregando inscricoes...</p></div>';
+  document.getElementById('lista-presenca').innerHTML = loading;
+  document.getElementById('lista-alunos').innerHTML = loading;
+
+  // Remove script antigo se existir
+  var old = document.getElementById('jsonp-script');
+  if (old) old.parentNode.removeChild(old);
+
+  window._jsonpCallback = function(dados) {
+    dadosBrutos = dados;
+    document.getElementById('atualizado').textContent = 'Atualizado em: ' + new Date().toLocaleTimeString('pt-BR');
+    renderStats();
+    renderPresenca();
+    renderAlunos();
+  };
+
+  var script = document.createElement('script');
+  script.id = 'jsonp-script';
+  script.src = SCRIPT_URL + '?callback=_jsonpCallback&t=' + Date.now();
+  script.onerror = function() {
+    var err = '<div class="loading-state"><p>Erro ao carregar dados. Verifique sua conexao.</p></div>';
+    document.getElementById('lista-presenca').innerHTML = err;
+    document.getElementById('lista-alunos').innerHTML = err;
+  };
+  document.body.appendChild(script);
+}
+
+function dedup(dados) {
+  var vistos = {};
+  return dados.filter(function(d){
+    var k = d.aluno + '|' + d.bloco;
+    if (vistos[k]) return false;
+    vistos[k] = true;
+    return true;
+  });
+}
+
+function renderStats() {
+  var dd = dedup(dadosBrutos);
+  var total = dd.length;
+  var alunos = {};
+  dd.forEach(function(d){ alunos[d.aluno] = true; });
+  var nalunos = Object.keys(alunos).length;
+  var b1 = dd.filter(function(d){ return d.bloco === 'Bloco 1'; }).length;
+  var b2 = dd.filter(function(d){ return d.bloco === 'Bloco 2'; }).length;
+  var b3 = dd.filter(function(d){ return d.bloco === 'Bloco 3'; }).length;
+  document.getElementById('stats-grid').innerHTML =
+    '<div class="stat-card"><div class="stat-label">Total inscricoes</div><div class="stat-value">' + total + '</div><div class="stat-sub">em todos os blocos</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Alunos inscritos</div><div class="stat-value">' + nalunos + '</div><div class="stat-sub">alunos unicos</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Bloco 1</div><div class="stat-value">' + b1 + '</div><div class="stat-sub">13h as 14h</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Bloco 2</div><div class="stat-value">' + b2 + '</div><div class="stat-sub">14h30 as 15h30</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Bloco 3</div><div class="stat-value">' + b3 + '</div><div class="stat-sub">16h as 17h</div></div>';
+}
+
+function getMapa() {
+  var mapa = {};
+  var vistos = {};
+  dadosBrutos.forEach(function(d){
+    var k = d.aluno + '|' + d.bloco;
+    if (vistos[k]) return;
+    vistos[k] = true;
+    if (!mapa[d.bloco]) mapa[d.bloco] = {};
+    if (!mapa[d.bloco][d.oficina]) mapa[d.bloco][d.oficina] = [];
+    mapa[d.bloco][d.oficina].push(d.aluno);
+  });
+  return mapa;
+}
+
+function getMapaAlunos() {
+  var mapa = {};
+  var vistos = {};
+  dadosBrutos.forEach(function(d){
+    var k = d.aluno + '|' + d.bloco;
+    if (vistos[k]) return;
+    vistos[k] = true;
+    if (!mapa[d.aluno]) mapa[d.aluno] = {};
+    mapa[d.aluno][d.bloco] = d.oficina;
+  });
+  return mapa;
+}
+
+function nomeProprio(nome) {
+  return nome.split(' ').map(function(p){ return p.charAt(0) + p.slice(1).toLowerCase(); }).join(' ');
+}
+
+function renderPresenca() {
+  var filtro = document.getElementById('filtro-bloco').value;
+  var mapa = getMapa();
+  var body = document.getElementById('lista-presenca');
+  body.innerHTML = '';
+  var totalExibido = 0;
+
+  BLOCOS_INFO.forEach(function(bloco){
+    if (filtro && bloco.label !== filtro) return;
+    var sec = document.createElement('div');
+    sec.className = 'bloco-section';
+    var tit = document.createElement('div');
+    tit.className = 'bloco-titulo';
+    tit.textContent = bloco.label + ' — ' + bloco.horario;
+    sec.appendChild(tit);
+
+    bloco.oficinas.forEach(function(of){
+      var alunos = ((mapa[bloco.label] || {})[of.nome] || []).slice().sort();
+      totalExibido += alunos.length;
+      var n = alunos.length, livres = of.vagas - n;
+      var vc = 'vb-ok', vt = n + '/' + of.vagas + ' inscritos';
+      if (n >= of.vagas){ vc = 'vb-full'; vt = n + '/' + of.vagas + ' — Esgotado'; }
+      else if (livres <= 3){ vc = 'vb-warn'; }
+
+      var box = document.createElement('div');
+      box.className = 'oficina-box';
+
+      var hdr = document.createElement('div');
+      hdr.className = 'oficina-header';
+      hdr.innerHTML = '<span class="oficina-nome">' + of.nome + '</span>' +
+        '<div class="oficina-meta"><span class="tag">' + of.categoria + '</span>' +
+        '<span class="vagas-badge ' + vc + '">' + vt + '</span></div>';
+      box.appendChild(hdr);
+
+      var lista = document.createElement('div');
+      lista.className = 'alunos-lista';
+      if (alunos.length === 0) {
+        lista.innerHTML = '<div class="empty">Nenhum inscrito ainda.</div>';
+      } else {
+        alunos.forEach(function(nome, i){
+          var row = document.createElement('div');
+          row.className = 'aluno-row';
+          var chave = nome + '|' + bloco.label;
+          var cb = document.createElement('div');
+          cb.className = 'check-box' + (presencaMarcada[chave] ? ' checked' : '');
+          cb.addEventListener('click', function(){ togglePresenca(cb, chave); });
+          var nm = document.createElement('span');
+          nm.className = 'aluno-nome-p';
+          nm.textContent = nomeProprio(nome);
+          var num = document.createElement('span');
+          num.className = 'aluno-num';
+          num.textContent = i + 1;
+          row.appendChild(cb); row.appendChild(nm); row.appendChild(num);
+          lista.appendChild(row);
+        });
+      }
+      box.appendChild(lista);
+      sec.appendChild(box);
+    });
+    body.appendChild(sec);
+  });
+  document.getElementById('badge-presenca').textContent = totalExibido + (totalExibido === 1 ? ' inscricao' : ' inscricoes');
+}
+
+function renderAlunos() {
+  var busca = (document.getElementById('busca-aluno').value || '').toLowerCase();
+  var mapaAlunos = getMapaAlunos();
+  var body = document.getElementById('lista-alunos');
+  body.innerHTML = '';
+  var nomes = Object.keys(mapaAlunos).sort();
+  if (busca) nomes = nomes.filter(function(n){ return n.toLowerCase().indexOf(busca) >= 0; });
+  document.getElementById('badge-alunos').textContent = nomes.length + (nomes.length === 1 ? ' aluno' : ' alunos');
+  if (nomes.length === 0) {
+    body.innerHTML = '<div class="loading-state"><p>Nenhum aluno encontrado.</p></div>';
+    return;
+  }
+  nomes.forEach(function(nome){
+    var inscricoes = mapaAlunos[nome];
+    var qtd = Object.keys(inscricoes).length;
+    var completo = qtd === 3;
+    var card = document.createElement('div');
+    card.className = 'aluno-card';
+    var hdr = document.createElement('div');
+    hdr.className = 'aluno-card-header';
+    hdr.innerHTML = '<span class="aluno-card-nome">' + nomeProprio(nome) + '</span>' +
+      '<span class="blocos-count ' + (completo ? 'bc-completo' : 'bc-parcial') + '">' + qtd + '/3 blocos</span>';
+    card.appendChild(hdr);
+    var ofsDiv = document.createElement('div');
+    ofsDiv.className = 'aluno-oficinas';
+    BLOCOS_INFO.forEach(function(b){
+      var oficina = inscricoes[b.label];
+      var row = document.createElement('div');
+      row.className = 'oficina-row';
+      var pill = document.createElement('span');
+      pill.className = 'bloco-pill-mini ' + b.cor;
+      pill.textContent = b.label;
+      row.appendChild(pill);
+      var onome = document.createElement('span');
+      onome.className = 'oficina-row-nome';
+      if (!oficina) {
+        onome.textContent = 'Nao inscrito';
+        onome.style.cssText = 'font-style:italic;color:var(--muted);';
+        row.style.opacity = '0.45';
+        row.appendChild(onome);
+      } else {
+        onome.textContent = oficina;
+        row.appendChild(onome);
+        var btnCancel = document.createElement('button');
+        btnCancel.className = 'btn-cancelar';
+        btnCancel.textContent = 'Cancelar';
+        btnCancel.setAttribute('data-aluno', nome);
+        btnCancel.setAttribute('data-bloco', b.label);
+        btnCancel.addEventListener('click', function(){
+          cancelarInscricao(btnCancel.getAttribute('data-aluno'), btnCancel.getAttribute('data-bloco'));
+        });
+        row.appendChild(btnCancel);
+      }
+      ofsDiv.appendChild(row);
+    });
+    card.appendChild(ofsDiv);
+    body.appendChild(card);
+  });
+}
+
+function togglePresenca(el, chave) {
+  el.classList.toggle('checked');
+  if (el.classList.contains('checked')) presencaMarcada[chave] = true;
+  else delete presencaMarcada[chave];
+}
+
+function cancelarInscricao(aluno, bloco) {
+  if (!confirm('Cancelar inscricao de ' + nomeProprio(aluno) + ' no ' + bloco + '?')) return;
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({acao: 'cancelar', aluno: aluno, bloco: bloco})
+  }).then(function(){
+    mostrarToast('Inscricao cancelada!');
+    setTimeout(carregarDados, 1000);
+  }).catch(function(){
+    mostrarToast('Erro ao cancelar.', true);
+  });
+}
+
+function mostrarToast(msg, erro) {
+  var t = document.getElementById('toast-admin');
+  t.textContent = msg;
+  t.className = erro ? 'error show' : 'show';
+  setTimeout(function(){ t.className = erro ? 'error' : ''; }, 3000);
+}
+
+function exportarExcel() {
+  var wb = XLSX.utils.book_new();
+  var mapaAlunos = getMapaAlunos();
+  var mapa = getMapa();
+
+  // Aba 1: Portaria
+  var portariaData = [['#', 'Nome', 'Presenca']];
+  var nomes = Object.keys(mapaAlunos).sort();
+  nomes.forEach(function(nome, i){
+    portariaData.push([i+1, nomeProprio(nome), '']);
+  });
+  var wsPortaria = XLSX.utils.aoa_to_sheet(portariaData);
+  wsPortaria['!cols'] = [{wch:5},{wch:40},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, wsPortaria, 'Portaria');
+
+  // Aba 2: Por Oficina
+  var oficData = [['Bloco', 'Horario', 'Oficina', 'Categoria', 'Vagas', 'Inscritos', '#', 'Nome', 'Presenca']];
+  BLOCOS_INFO.forEach(function(bloco){
+    bloco.oficinas.forEach(function(of){
+      var alunos = ((mapa[bloco.label] || {})[of.nome] || []).slice().sort();
+      if (alunos.length === 0) {
+        oficData.push([bloco.label, bloco.horario, of.nome, of.categoria, of.vagas, 0, '', '', '']);
+      } else {
+        alunos.forEach(function(nome, i){
+          oficData.push([
+            i === 0 ? bloco.label : '',
+            i === 0 ? bloco.horario : '',
+            i === 0 ? of.nome : '',
+            i === 0 ? of.categoria : '',
+            i === 0 ? of.vagas : '',
+            i === 0 ? alunos.length : '',
+            i+1,
+            nomeProprio(nome),
+            ''
+          ]);
+        });
+      }
+    });
+  });
+  var wsOfic = XLSX.utils.aoa_to_sheet(oficData);
+  wsOfic['!cols'] = [{wch:10},{wch:16},{wch:30},{wch:20},{wch:8},{wch:10},{wch:5},{wch:40},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, wsOfic, 'Por Oficina');
+
+  // Aba 3: Por Aluno
+  var alunoData = [['Nome', 'Bloco 1', 'Bloco 2', 'Bloco 3']];
+  nomes.forEach(function(nome){
+    var insc = mapaAlunos[nome];
+    alunoData.push([
+      nomeProprio(nome),
+      insc['Bloco 1'] || 'Nao inscrito',
+      insc['Bloco 2'] || 'Nao inscrito',
+      insc['Bloco 3'] || 'Nao inscrito'
+    ]);
+  });
+  var wsAluno = XLSX.utils.aoa_to_sheet(alunoData);
+  wsAluno['!cols'] = [{wch:40},{wch:35},{wch:35},{wch:35}];
+  XLSX.utils.book_append_sheet(wb, wsAluno, 'Por Aluno');
+
+  XLSX.writeFile(wb, 'UMLO_RJ_2026_Presenca.xlsx');
+}
+
+function renderPortaria() {
+  var busca = (document.getElementById('busca-portaria').value || '').toLowerCase();
+  var mapaAlunos = getMapaAlunos();
+  var body = document.getElementById('lista-portaria');
+  body.innerHTML = '';
+  var nomes = Object.keys(mapaAlunos).sort();
+  if (busca) nomes = nomes.filter(function(n){ return n.toLowerCase().indexOf(busca) >= 0; });
+  document.getElementById('badge-portaria').textContent = nomes.length + (nomes.length === 1 ? ' aluno' : ' alunos');
+  if (nomes.length === 0) {
+    body.innerHTML = '<div class="loading-state"><p>Nenhum aluno inscrito ainda.</p></div>';
+    return;
+  }
+  var box = document.createElement('div');
+  box.className = 'oficina-box';
+  var lista = document.createElement('div');
+  lista.className = 'alunos-lista';
+  nomes.forEach(function(nome, i){
+    var row = document.createElement('div');
+    row.className = 'aluno-row';
+    var chave = 'portaria|' + nome;
+    var cb = document.createElement('div');
+    cb.className = 'check-box' + (presencaMarcada[chave] ? ' checked' : '');
+    cb.addEventListener('click', function(){ togglePresenca(cb, chave); });
+    var nm = document.createElement('span');
+    nm.className = 'aluno-nome-p';
+    nm.textContent = nomeProprio(nome);
+    var num = document.createElement('span');
+    num.className = 'aluno-num';
+    num.textContent = i + 1;
+    row.appendChild(cb); row.appendChild(nm); row.appendChild(num);
+    lista.appendChild(row);
+  });
+  box.appendChild(lista);
+  body.appendChild(box);
+}
+
+carregarDados();
+</script>
+</body>
+</html>
